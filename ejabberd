@@ -14,23 +14,23 @@
 #                    compliant server written in Erlang.
 ### END INIT INFO
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/local/bin:/local/sbin
-EJABBERDCTL=/local/sbin/ejabberdctl
-EJABBERDRUN=/local/var/run/ejabberd
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+EJABBERDCTL=/usr/local/sbin/ejabberdctl
+EJABBERDRUN=/usr/local/var/run/ejabberd
 EJABBERDUSER=ejabberd
 NAME=ejabberd
 
 test -f $EJABBERDCTL || exit 0
 
 # Include ejabberd defaults if available
-if [ -f /local/etc/default/ejabberd ] ; then
-    . /local/etc/default/ejabberd
+if [ -f /usr/local/etc/default/ejabberd ] ; then
+    . /usr/local/etc/default/ejabberd
 fi
 
 ctl()
 {
     action="$1"
-    su -s /bin/sh -c "$EJABBERDCTL $action" $EJABBERDUSER >/dev/null
+    su -l -s /bin/sh -c "$EJABBERDCTL $action" $EJABBERDUSER >/dev/null
 }
 
 mkrundir()
@@ -49,8 +49,8 @@ mkrundir()
 start()
 {
     mkrundir
-    cd /local/var/lib/ejabberd
-    su -s /bin/sh -c "$EJABBERDCTL start" $EJABBERDUSER
+    cd /usr/local/var/lib/ejabberd
+    su -l -s /bin/sh -c "$EJABBERDCTL start" $EJABBERDUSER
     cnt=0
     while ! (ctl status || test $? = 1) ; do
 	echo -n .
@@ -91,8 +91,8 @@ live()
     echo '*******************************************************'
     echo
 
-    cd /local/var/lib/ejabberd/
-    su -s /bin/sh -c "$EJABBERDCTL live" $EJABBERDUSER
+    cd /usr/local/var/lib/ejabberd/
+    su -l -s /bin/sh -c "$EJABBERDCTL live" $EJABBERDUSER
 }
 
 case "$1" in
