@@ -17,6 +17,8 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 EJABBERDCTL=/usr/local/sbin/ejabberdctl
 EJABBERDRUN=/usr/local/var/run/ejabberd
+EJABBERDLOG=/usr/local/var/log/ejabberd
+EJABBERDCONF=/usr/local/etc/ejabberd
 EJABBERDUSER=ejabberd
 NAME=ejabberd
 
@@ -33,7 +35,7 @@ ctl()
     su -l -s /bin/sh -c "$EJABBERDCTL $action" $EJABBERDUSER >/dev/null
 }
 
-mkrundir()
+dirs()
 {
     if [ ! -d $EJABBERDRUN ]; then
         mkdir -p $EJABBERDRUN
@@ -41,14 +43,21 @@ mkrundir()
             echo -n " failed"
             return
         fi
-        chmod 0755 $EJABBERDRUN
-        chown ejabberd:ejabberd $EJABBERDRUN
     fi
+    ## Run Dir
+    chmod -R 700 $EJABBERDRUN
+    chown ejabberd:ejabberd $EJABBERDRUN
+    ## Log Dir
+    chmod -R 775 $EJABBERDLOG
+    chown -R ejabberd:ejabberd $EJABBERDLOG
+    ## Conf Dir
+    chmod -R 775 $EJABBERDCONF
+    chown -R ejabberd:ejabberd $EJABBERDCONF
 }
 
 start()
 {
-    mkrundir
+    dirs
     cd /usr/local/var/lib/ejabberd
     su -l -s /bin/sh -c "$EJABBERDCTL start" $EJABBERDUSER
     cnt=0
@@ -84,7 +93,7 @@ stop()
 
 live()
 {
-    mkrundir
+    dirs
 
     echo '*******************************************************'
     echo '* To quit, type q().                                  *'
